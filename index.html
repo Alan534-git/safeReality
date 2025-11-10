@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>safeReality</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="startScreen" class="start-screen">
+      <div class="start-content">
+        <h1>safeReality</h1>
+        <p>Un pequeño juego educativo sobre seguridad.</p>
+        <button id="startButton" class="btn">Iniciar</button>
+      </div>
+      <div class="volume-bottomright">
+        <label for="volume">Volumen</label>
+        <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6">
+      </div>
+    </div>
+
+    <!-- Audios: inicio (pantalla) y patio (al iniciar) -->
+    <audio id="startAudio" loop src="mp3/inicio.mp3"></audio>
+    <script src="js/start.js"></script>
+  </body>
+</html>
