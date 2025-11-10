@@ -5,12 +5,20 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>safeReality - Patio</title>
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/patio.css" />
   </head>
   <body>
     <canvas id="gameCanvas"></canvas>
 
     <!-- Audio del patio -->
-    <audio id="patioAudio" loop src="mp3/patio.mp3"></audio>
+    <audio id="patioAudio" loop preload="auto" src="mp3/patio.mp3"></audio>
+
+    <!-- Control de audio -->
+    <div class="volume-bottomright">
+      <button id="playButton" class="btn btn-icon" title="Play/Pause">▶</button>
+      <label for="volume">Volumen</label>
+      <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6">
+    </div>
 
     <!-- Diálogo/modal de la casa (oculto por defecto) -->
     <div id="houseDialog" class="overlay" style="display: none;">
@@ -21,11 +29,7 @@
       </div>
     </div>
 
-    <div class="volume-bottomright">
-      <label for="volume">Volumen</label>
-      <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6">
-    </div>
-
+    <script src="js/audio.js"></script>
     <script src="js/patio.js"></script>
   </body>
 </html>

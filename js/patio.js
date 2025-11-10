@@ -10,10 +10,11 @@ window.addEventListener('resize', resize);
 resize();
 
 // Elementos UI
-const patioAudio = document.getElementById('patioAudio');
-const volumeSlider = document.getElementById('volume');
 const houseDialog = document.getElementById('houseDialog');
 const closeDialog = document.getElementById('closeDialog');
+
+// Audio
+const audioController = new AudioController('patioAudio', 'playButton', 'volume');
 
 // Player
 const player = { x: 100, y: 100, r: 14, speed: 210, color: '#ffd54f' };
@@ -185,25 +186,13 @@ window.addEventListener('keyup', e => { keys[e.key] = false; });
 
 closeDialog.addEventListener('click', ()=>{ houseDialog.style.display = 'none'; });
 
-// Volumen (leer de localStorage)
-const savedVol = localStorage.getItem('safeReality.volume');
-if(savedVol !== null){
-  volumeSlider.value = savedVol;
-}
-patioAudio.volume = parseFloat(volumeSlider.value);
-volumeSlider.addEventListener('input', ()=>{
-  const v = parseFloat(volumeSlider.value);
-  patioAudio.volume = v;
-  localStorage.setItem('safeReality.volume', v);
-});
-
 // Inicialización
 (function init(){
   player.x = Math.min(140, canvas.width/4);
   player.y = canvas.height/2;
   generateTrees();
   last = performance.now();
-  // reproducir audio del patio (puede bloquear hasta interacción)
-  patioAudio.play().catch(()=>{});
+  // reproducir audio del patio
+  audioController.play();
   loop();
 })();
