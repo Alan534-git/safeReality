@@ -17,12 +17,59 @@ const closeDialog = document.getElementById('closeDialog');
 const audioController = new AudioController('patioAudio', 'playButton', 'volume');
 
 // Player
-const player = { x: 100, y: 100, r: 14, speed: 210, color: '#ffd54f' };
+const player = { x: 100, y: 100, r: 18, speed: 210, color: '#ffd54f', moving: false };
 const keys = {};
 
 // Patio y objetos
 const trees = [];
 const house = { x: 700, y: 220, w: 160, h: 120 };
+
+// Items and levels
+const images = {
+  agenteParado: null,
+  agenteCorre: null,
+  pendrive: null
+};
+
+const items = [];
+
+const levels = [
+  {
+    id: 1,
+    title: 'Calle - Pendrive encontrado',
+    description: 'Ves un pendrive en el suelo. ¿Lo recoges? Podría contener malware.',
+    trigger: { x: 260, y: 220, r: 80 }
+  },
+  {
+    id: 2,
+    title: 'Cafetería - Red pública',
+    description: 'Estás en una cafetería y hay una red Wi‑Fi pública disponible. ¿Te conectas?',
+    trigger: { x: 420, y: 160, r: 90 }
+  },
+  {
+    id: 3,
+    title: 'Oficina - USB sospechoso',
+    description: 'Un USB aparece en una mesa compartida de la oficina.',
+    trigger: { x: 520, y: 340, r: 80 }
+  },
+  {
+    id: 4,
+    title: 'Parada de bus - Cargador público',
+    description: 'Un cargador público ofrece cargar tu móvil. ¿Lo usas?',
+    trigger: { x: 120, y: 360, r: 80 }
+  },
+  {
+    id: 5,
+    title: 'Casa - Conexión doméstica',
+    description: 'Has llegado a casa. Decide cómo proteger tu conexión y dispositivos.',
+    trigger: { x: house.x + house.w/2, y: house.y + house.h/2, r: 140 }
+  }
+];
+
+let currentLevel = 1;
+
+// UI elements for levels (patio acts as hub; levels are separate pages)
+const levelBadge = document.getElementById('levelBadge');
 
 // Generar algunos árboles aleatorios dentro del patio
 function generateTrees(){
@@ -100,10 +147,33 @@ function drawHouse(){
 }
 
 function drawPlayer(){
-  ctx.beginPath();
-  ctx.fillStyle = player.color;
-  ctx.arc(player.x, player.y, player.r, 0, Math.PI*2);
-  ctx.fill();
+  // Draw using images if available, otherwise fallback to circle
+  const w = player.r*2.2;
+  const h = player.r*2.8;
+  if(player.moving && images.agenteCorre){
+    ctx.drawImage(images.agenteCorre, player.x - w/2, player.y - h/2, w, h);
+  } else if(images.agenteParado){
+    ctx.drawImage(images.agenteParado, player.x - w/2, player.y - h/2, w, h);
+  } else {
+    ctx.beginPath();
+    ctx.fillStyle = player.color;
+    ctx.arc(player.x, player.y, player.r, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function drawItems(){
+  for(const it of items){
+    if(it.type === 'pendrive'){
+      if(images.pendrive){
+        const s = 28;
+        ctx.drawImage(images.pendrive, it.x - s/2, it.y - s/2, s, s);
+      } else {
+        ctx.fillStyle = '#ffeb3b';
+        ctx.fillRect(it.x-6, it.y-4, 12, 8);
+      }
+    }
+  }
 }
 
 // Movimiento y lógica
@@ -123,7 +193,9 @@ function update(){
     dx = dx/len; dy = dy/len;
     player.x += dx * player.speed * dt;
     player.y += dy * player.speed * dt;
+    player.moving = true;
   }
+  else player.moving = false;
 
   player.x = Math.max(player.r+40, Math.min(canvas.width - player.r - 40, player.x));
   player.y = Math.max(player.r+40, Math.min(canvas.height - player.r - 40, player.y));
@@ -147,6 +219,7 @@ function render(){
   drawBackground();
   drawTrees();
   drawHouse();
+  drawItems();
   drawPlayer();
 
   const cx = house.x + house.w/2;
@@ -171,12 +244,26 @@ function loop(){
 window.addEventListener('keydown', e => {
   // tecla E para interactuar
   if(e.key === 'e' || e.key === 'E'){
-    const cx = house.x + house.w/2;
-    const cy = house.y + house.h/2;
-    const dist = Math.hypot(player.x - cx, player.y - cy);
-    if(dist < 120){
+    // First check if near house (existing behavior)
+    const hx = house.x + house.w/2;
+    const hy = house.y + house.h/2;
+    const houseDist = Math.hypot(player.x - hx, player.y - hy);
+    if(houseDist < 120){
       houseDialog.style.display = 'flex';
       for(const k in keys) keys[k] = false;
+      return; // handled
+    }
+
+    // Check level triggers
+    for(const lvl of levels){
+      const t = lvl.trigger;
+      const d = Math.hypot(player.x - t.x, player.y - t.y);
+      if(d < t.r){
+        // Redirect to the separate level page
+        for(const k in keys) keys[k] = false;
+        window.location.href = `level${lvl.id}.html`;
+        return;
+      }
     }
     return; // no marcar como movimiento
   }
@@ -194,5 +281,32 @@ closeDialog.addEventListener('click', ()=>{ houseDialog.style.display = 'none'; 
   last = performance.now();
   // reproducir audio del patio
   audioController.play();
+  // preload images
+  preloadImages();
+  setupLevelItems();
   loop();
 })();
+
+// Level / UI logic
+function preloadImages(){
+  const p1 = new Image(); p1.src = 'png/players/player_1/agente_parado.png';
+  p1.onload = ()=> images.agenteParado = p1;
+  p1.onerror = ()=> console.log('No se encontro agente_parado');
+
+  const p2 = new Image(); p2.src = 'png/players/player_1/agente_corre.png';
+  p2.onload = ()=> images.agenteCorre = p2;
+  p2.onerror = ()=> console.log('No se encontro agente_corre');
+
+  const pd = new Image(); pd.src = 'png/pendrive.png';
+  pd.onload = ()=> images.pendrive = pd;
+  pd.onerror = ()=> console.log('No se encontro pendrive.png');
+}
+
+function setupLevelItems(){
+  // Level 1: place a pendrive roughly at the trigger
+  const l1 = levels.find(l=>l.id===1);
+  if(l1){
+    items.push({ type: 'pendrive', x: l1.trigger.x, y: l1.trigger.y });
+  }
+}
+// Note: level interactions now happen in separate files (level1.html .. level5.html)

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>safeReality - Nivel 3</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main style="max-width:900px;margin:36px auto;padding:16px;">
+      <h1>Nivel 3 — Oficina: USB sospechoso</h1>
+      <p>Encuentras un USB en una mesa compartida de la oficina. ¿Qué haces?</p>
+
+      <div id="options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
+      <div id="result" style="margin-top:16px;font-weight:600;color:#fff;"></div>
+
+      <div style="margin-top:18px;display:flex;gap:8px;">
+        <button id="back" class="btn">Volver al patio</button>
+        <button id="next" class="btn" style="display:none;">Siguiente nivel</button>
+      </div>
+    </main>
+
+    <script>
+      const options = [
+        { label: 'Recoger y usar sin comprobar', result: 'USB con malware; red interna comprometida.' },
+        { label: 'Analizar con antivirus antes de abrir', result: 'Antivirus detectó y puso en cuarentena archivos maliciosos.' },
+        { label: 'Entregar al equipo de seguridad', result: 'Equipo de seguridad lo analiza en entorno aislado.' }
+      ];
+
+      const optsEl = document.getElementById('options');
+      const resEl = document.getElementById('result');
+      const nextBtn = document.getElementById('next');
+      const backBtn = document.getElementById('back');
+
+      for(const o of options){
+        const b = document.createElement('button');
+        b.className = 'btn';
+        b.textContent = o.label;
+        b.addEventListener('click', ()=>{
+          resEl.textContent = o.result;
+          optsEl.querySelectorAll('button').forEach(x=>x.disabled=true);
+          nextBtn.style.display = 'inline-block';
+        });
+        optsEl.appendChild(b);
+      }
+
+      backBtn.addEventListener('click', ()=>{ window.location.href = 'patio.html'; });
+      nextBtn.addEventListener('click', ()=>{ window.location.href = 'level4.html'; });
+    </script>
+  </body>
+</html>

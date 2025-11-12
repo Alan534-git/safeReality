@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>safeReality - Nivel 1</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main style="max-width:900px;margin:36px auto;padding:16px;">
+      <h1>Nivel 1 — Calle: Pendrive encontrado</h1>
+      <p>Ves un pendrive en el suelo. Podría contener malware. Elige una acción:</p>
+
+      <div id="visual" style="margin:12px 0;"></div>
+      <div id="options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
+      <div id="result" style="margin-top:16px;font-weight:600;color:#fff;"></div>
+
+      <div style="margin-top:18px;display:flex;gap:8px;">
+        <button id="back" class="btn">Volver al patio</button>
+        <button id="next" class="btn" style="display:none;">Siguiente nivel</button>
+      </div>
+    </main>
+
+    <script>
+      const options = [
+        { label: 'No recoger', result: 'Has dejado el pendrive. Evitaste riesgo inmediato.' },
+        { label: 'Recoger y conectar sin comprobar', result: 'Al conectarlo, el sistema se infecta con malware.' },
+        { label: 'Recoger y analizar con antivirus', result: 'Analizaste el pendrive con antivirus y eliminaste amenazas. Buen trabajo.' },
+        { label: 'Entregar al Agente', result: 'Entregaste el pendrive al Agente para análisis seguro.' }
+      ];
+
+      const optsEl = document.getElementById('options');
+      const resEl = document.getElementById('result');
+      const nextBtn = document.getElementById('next');
+      const backBtn = document.getElementById('back');
+
+      // show pendrive image if exists
+      const v = document.getElementById('visual');
+      const img = new Image(); img.src = 'png/pendrive.png';
+      img.onload = ()=>{ img.style.width='64px'; v.appendChild(img); };
+
+      for(const o of options){
+        const b = document.createElement('button');
+        b.className = 'btn';
+        b.textContent = o.label;
+        b.addEventListener('click', ()=>{
+          resEl.textContent = o.result;
+          optsEl.querySelectorAll('button').forEach(x=>x.disabled=true);
+          nextBtn.style.display = 'inline-block';
+        });
+        optsEl.appendChild(b);
+      }
+
+      backBtn.addEventListener('click', ()=>{ window.location.href = 'patio.html'; });
+      nextBtn.addEventListener('click', ()=>{ window.location.href = 'level2.html'; });
+    </script>
+  </body>
+</html>

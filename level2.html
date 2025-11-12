@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>safeReality - Nivel 2</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main style="max-width:900px;margin:36px auto;padding:16px;">
+      <h1>Nivel 2 — Cafetería: Red pública</h1>
+      <p>Estás en una cafetería y hay una red Wi‑Fi pública disponible. ¿Te conectas?</p>
+
+      <div id="options" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
+      <div id="result" style="margin-top:16px;font-weight:600;color:#fff;"></div>
+
+      <div style="margin-top:18px;display:flex;gap:8px;">
+        <button id="back" class="btn">Volver al patio</button>
+        <button id="next" class="btn" style="display:none;">Siguiente nivel</button>
+      </div>
+    </main>
+
+    <script>
+      const options = [
+        { label: 'Conectarme a la red pública', result: 'La conexión no es segura: datos expuestos.' },
+        { label: 'Usar datos móviles', result: 'Usaste datos móviles: conexión más segura.' },
+        { label: 'Usar VPN con wifi público', result: 'VPN activo: la sesión está cifrada. Buena elección.' },
+        { label: 'Conectarme y compartir información sensible', result: 'Información interceptada por un atacante en la red.' }
+      ];
+
+      const optsEl = document.getElementById('options');
+      const resEl = document.getElementById('result');
+      const nextBtn = document.getElementById('next');
+      const backBtn = document.getElementById('back');
+
+      for(const o of options){
+        const b = document.createElement('button');
+        b.className = 'btn';
+        b.textContent = o.label;
+        b.addEventListener('click', ()=>{
+          resEl.textContent = o.result;
+          optsEl.querySelectorAll('button').forEach(x=>x.disabled=true);
+          nextBtn.style.display = 'inline-block';
+        });
+        optsEl.appendChild(b);
+      }
+
+      backBtn.addEventListener('click', ()=>{ window.location.href = 'patio.html'; });
+      nextBtn.addEventListener('click', ()=>{ window.location.href = 'level3.html'; });
+    </script>
+  </body>
+</html>
